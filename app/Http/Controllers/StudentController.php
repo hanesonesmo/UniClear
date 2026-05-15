@@ -78,6 +78,7 @@ class StudentController extends Controller
     //update student profile
     public function updateProfile(Request $request)
     {
+        /** @var User $student */
         $student = Auth::user();
 
         $request->validate([
@@ -86,11 +87,10 @@ class StudentController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $student->id,
         ]);
 
-        $student->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'department_id' => $request->department_id,
-        ]);
+        $student->name = $request->name;
+        $student->email = $request->email;
+        $student->department_id = $request->department_id;
+        $student->save();
 
         return back()->with('success', 'Profile updated successfully.');
     }
