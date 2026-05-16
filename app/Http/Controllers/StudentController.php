@@ -19,7 +19,7 @@ class StudentController extends Controller
     {
         $student = Auth::user();
 
-        $clearances = ClearanceRequest::where('student_id', $student->id)
+        $clearances = ClearanceRequest::where('user_id', $student->id)
             ->with('department')
             ->get();
 
@@ -46,7 +46,7 @@ class StudentController extends Controller
     {
         $student = Auth::user();
 
-        $alreadyApplied = ClearanceRequest::where('student_id', $student->id)->exists();
+        $alreadyApplied = ClearanceRequest::where('user_id', $student->id)->exists();
 
         if ($alreadyApplied) {
             return back()->with('error', 'You have already submitted a clearance request. Please wait for it to be processed before submitting again.');
@@ -57,7 +57,7 @@ class StudentController extends Controller
         $departments = Department::all();
         foreach ($departments as $department) {
             ClearanceRequest::create([
-                'student_id' => $student->id,
+                'user_id' => $student->id,
                 'department_id' => $department->id,
                 'status' => 'pending',
             ]);
@@ -102,7 +102,7 @@ class StudentController extends Controller
     {
         $student = Auth::user();
 
-        $approvedCount = ClearanceRequest::where('student_id', $student->id)
+        $approvedCount = ClearanceRequest::where('user_id', $student->id)
             ->where('status', 'approved')
             ->count();
         $totalDepartments = Department::count();
@@ -111,7 +111,7 @@ class StudentController extends Controller
             return back()->with('error', 'Your clearance is not fully approved yet. Please wait until all departments have approved your clearance before downloading the report.');
         }
 
-        $clearances = ClearanceRequest::where('student_id', $student->id)
+        $clearances = ClearanceRequest::where('user_id', $student->id)
             ->with('department', 'processedBy')
             ->get();
 

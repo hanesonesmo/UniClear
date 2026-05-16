@@ -10,7 +10,7 @@ class ClearanceRequest extends Model
     use HasFactory;
 
     protected $fillable = [
-        'student_id',
+        'user_id',
         'department_id',
         'status', // pending, approved, rejected
         'processed_by', 
@@ -26,7 +26,7 @@ class ClearanceRequest extends Model
 //The student who submitted this clearance request
 public function students()
 {
-    return $this->belongsTo(User::class, 'student_id');
+    return $this->belongsTo(User::class, 'user_id');
 }
 
 //The department responsible for approving/Rejecting this request

@@ -40,7 +40,7 @@ class User extends Authenticatable
 //a user can have many clearance requests (for students)
 public function clearanceRequests()
 {
-    return $this->hasMany(ClearanceRequest::class, 'student_id');
+   return $this->hasMany(ClearanceRequest::class, 'user_id');
 }
 
 //A staff member belongs to one department

@@ -27,10 +27,9 @@
                     </div>
 
                     {{-- Validation Errors --}}
-                    {{-- Uses $errors->register (named bag) so these never bleed into the login page --}}
-                    @if($errors->register->any())
+                    @if($errors->any())
                         <div class="alert alert-danger small">
-                            @foreach($errors->register->all() as $error)
+                            @foreach($errors->all() as $error)
                                 <div><i class="bi bi-exclamation-circle me-1"></i>{{ $error }}</div>
                             @endforeach
                         </div>
@@ -49,12 +48,12 @@
                                     type="text"
                                     name="name"
                                     id="name"
-                                    class="form-control @error('name', 'register') is-invalid @enderror"
+                                    class="form-control @error('name') is-invalid @enderror"
                                     value="{{ old('name') }}"
                                     placeholder="e.g., John Mwangi"
                                     required
                                 >
-                                @error('name', 'register')
+                                @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -66,12 +65,12 @@
                                     type="text"
                                     name="registration_number"
                                     id="registration_number"
-                                    class="form-control @error('registration_number', 'register') is-invalid @enderror"
+                                    class="form-control @error('registration_number') is-invalid @enderror"
                                     value="{{ old('registration_number') }}"
                                     placeholder="e.g., 2021/CS/0042"
                                     required
                                 >
-                                @error('registration_number', 'register')
+                                @error('registration_number')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -83,12 +82,12 @@
                                     type="text"
                                     name="phone"
                                     id="phone"
-                                    class="form-control @error('phone', 'register') is-invalid @enderror"
+                                    class="form-control @error('phone') is-invalid @enderror"
                                     value="{{ old('phone') }}"
                                     placeholder="+255 7XX XXX XXX"
                                     required
                                 >
-                                @error('phone', 'register')
+                                @error('phone')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -99,7 +98,7 @@
                                 <select
                                     name="department_id"
                                     id="department_id"
-                                    class="form-select @error('department_id', 'register') is-invalid @enderror"
+                                    class="form-select @error('department_id') is-invalid @enderror"
                                     required
                                 >
                                     <option value="">-- Select your department --</option>
@@ -110,7 +109,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('department_id', 'register')
+                                @error('department_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -122,12 +121,12 @@
                                     type="email"
                                     name="email"
                                     id="email"
-                                    class="form-control @error('email', 'register') is-invalid @enderror"
+                                    class="form-control @error('email') is-invalid @enderror"
                                     value="{{ old('email') }}"
                                     placeholder="your@university.ac.tz"
                                     required
                                 >
-                                @error('email', 'register')
+                                @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -139,11 +138,11 @@
                                     type="password"
                                     name="password"
                                     id="password"
-                                    class="form-control @error('password', 'register') is-invalid @enderror"
+                                    class="form-control @error('password') is-invalid @enderror"
                                     placeholder="Min. 8 characters"
                                     required
                                 >
-                                @error('password', 'register')
+                                @error('password')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
