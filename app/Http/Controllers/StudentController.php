@@ -2,120 +2,105 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\Department;
 use App\Models\ClearanceRequest;
+use App\Models\Department;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-///StudentController handles the student dashboard and clearance request submission.
-//It allows students to view their clearance progress, submit new clearance requests, and track the status
-
+/**
+ * StudentController
+ * Handles student dashboard, clearance submission, profile, report download.
+ */
 class StudentController extends Controller
 {
-    //load the clearance status for each department and overall progress
-
+    // Student dashboard — shows clearance status per department
     public function dashboard()
     {
         $student = Auth::user();
 
+        // Load all clearance requests for this student
+        // NOTE: foreign key is 'user_id' (not student_id) — matches actual DB column
         $clearances = ClearanceRequest::where('user_id', $student->id)
-            ->with('department')
-            ->get();
+                        ->with('department')
+                        ->get();
 
-        $hashApplied = $clearances->isNotEmpty();
-        //count how many departments have approved clearance
-
-        $approvedCount = $clearances->where('status', 'approved')->count();
-        $totalDepartments = Department::count();
-
-        $isFullyCleared = $hashApplied && ($approvedCount === $totalDepartments);
+        $hasApplied     = $clearances->isNotEmpty();
+        $approvedCount  = $clearances->where('status', 'approved')->count();
+        $totalDepts     = Department::count();
+        $isFullyCleared = $hasApplied && ($approvedCount === $totalDepts);
 
         return view('student.dashboard', compact(
-            'clearances',
-            'student',
-            'isFullyCleared',
-            'totalDepartments',
-            'hashApplied',
-            'approvedCount'
+            'student', 'clearances', 'hasApplied',
+            'approvedCount', 'totalDepts', 'isFullyCleared'
         ));
     }
 
-    //Submit clearance request - creates or updates 7 records for each department
+    // Submit clearance request — creates one record per department
     public function submitClearance(Request $request)
     {
         $student = Auth::user();
 
+        // Prevent duplicate submissions
         $alreadyApplied = ClearanceRequest::where('user_id', $student->id)->exists();
-
         if ($alreadyApplied) {
-            return back()->with('error', 'You have already submitted a clearance request. Please wait for it to be processed before submitting again.');
-
+            return back()->with('error', 'You have already submitted a clearance request.');
         }
 
-        //get all departments and create a clearance request for each
+        // Create one pending record per department
         $departments = Department::all();
         foreach ($departments as $department) {
             ClearanceRequest::create([
-                'user_id' => $student->id,
+                'user_id'       => $student->id,
                 'department_id' => $department->id,
-                'status' => 'pending',
+                'status'        => 'pending',
+                'comment'       => null,
             ]);
         }
 
-        return back()->with('success', 'Clearance request submitted successfully. Please check your dashboard for updates.');
+        return back()->with('success', 'Clearance request submitted! Departments will now review your request.');
     }
 
-    //show student Profile
+    // Show student profile
     public function profile()
     {
-        $student = Auth::user();
+        $student     = Auth::user();
         $departments = Department::all();
-
         return view('student.profile', compact('student', 'departments'));
     }
 
-    //update student profile
+    // Update student profile
     public function updateProfile(Request $request)
     {
-        /** @var User $student */
         $student = Auth::user();
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name'          => 'required|string|max:255',
+            'phone'         => 'required|string|max:20',
             'department_id' => 'required|exists:departments,id',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $student->id,
         ]);
 
-        $student->name = $request->name;
-        $student->email = $request->email;
-        $student->department_id = $request->department_id;
-        $student->save();
+        $student->update([
+            'name'          => $request->name,
+            'phone'         => $request->phone,
+            'department_id' => $request->department_id,
+        ]);
 
         return back()->with('success', 'Profile updated successfully.');
     }
 
-
-//DOWNLOAD FINAL CLEARANCE REPORT
-//ONLY AVAILABLE IF ALL DEPARTMENTS HAVE APPROVED CLEARANCE
+    // Download clearance certificate (only when fully cleared)
     public function downloadReport()
     {
         $student = Auth::user();
 
-        $approvedCount = ClearanceRequest::where('user_id', $student->id)
-            ->where('status', 'approved')
-            ->count();
-        $totalDepartments = Department::count();
-
-        if ($approvedCount !== $totalDepartments) {
-            return back()->with('error', 'Your clearance is not fully approved yet. Please wait until all departments have approved your clearance before downloading the report.');
+        if (!$student->isFullyCleared()) {
+            return back()->with('error', 'You can only download your report when all departments have approved.');
         }
 
         $clearances = ClearanceRequest::where('user_id', $student->id)
-            ->with('department', 'processedBy')
-            ->get();
+                        ->with(['department', 'processedBy'])
+                        ->get();
 
-            return view('student.report', compact('clearances', 'student'));
-
+        return view('student.report', compact('student', 'clearances'));
     }
 }

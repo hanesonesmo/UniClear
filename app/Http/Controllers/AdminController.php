@@ -9,8 +9,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
+/**
+ * AdminController
+ * Handles admin dashboard, student/staff/department management, clearance overview.
+ */
 class AdminController extends Controller
 {
+    // Admin dashboard with system statistics
     public function dashboard()
     {
         $stats = [
@@ -32,9 +37,11 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('stats', 'recentActivity'));
     }
 
+    // List all students with clearance progress
     public function students(Request $request)
     {
         $search = $request->query('search');
+
         $students = User::where('role', 'student')
                         ->when($search, function ($query, $search) {
                             $query->where('name', 'like', "%{$search}%")
@@ -47,10 +54,12 @@ class AdminController extends Controller
                             'clearanceRequests as total_count',
                         ])
                         ->paginate(20);
+
         $totalDepts = Department::count();
         return view('admin.students', compact('students', 'totalDepts', 'search'));
     }
 
+    // Delete a student account
     public function deleteStudent(User $user)
     {
         if ($user->role !== 'student') {
@@ -61,6 +70,7 @@ class AdminController extends Controller
         return back()->with('success', "Student account for '{$name}' has been deleted.");
     }
 
+    // List all department staff
     public function staff()
     {
         $staffMembers = User::where('role', 'staff')->with('department')->get();
@@ -68,6 +78,7 @@ class AdminController extends Controller
         return view('admin.staff', compact('staffMembers', 'departments'));
     }
 
+    // Create a new staff account
     public function createStaff(Request $request)
     {
         $request->validate([
@@ -76,6 +87,7 @@ class AdminController extends Controller
             'department_id' => 'required|exists:departments,id',
             'password'      => ['required', Password::min(8)],
         ]);
+
         User::create([
             'name'          => $request->name,
             'email'         => $request->email,
@@ -83,9 +95,11 @@ class AdminController extends Controller
             'password'      => Hash::make($request->password),
             'role'          => 'staff',
         ]);
+
         return back()->with('success', 'Staff account created successfully.');
     }
 
+    // Delete a staff account
     public function deleteStaff(User $user)
     {
         if ($user->role !== 'staff') {
@@ -96,6 +110,7 @@ class AdminController extends Controller
         return back()->with('success', "Staff account for '{$name}' has been removed.");
     }
 
+    // List all departments
     public function departments()
     {
         $departments = Department::withCount([
@@ -105,6 +120,7 @@ class AdminController extends Controller
         return view('admin.departments', compact('departments'));
     }
 
+    // Add a new department
     public function createDepartment(Request $request)
     {
         $request->validate([
@@ -115,6 +131,7 @@ class AdminController extends Controller
         return back()->with('success', 'Department added successfully.');
     }
 
+    // Update a department
     public function updateDepartment(Request $request, Department $department)
     {
         $request->validate([
@@ -125,6 +142,7 @@ class AdminController extends Controller
         return back()->with('success', 'Department updated successfully.');
     }
 
+    // Delete a department
     public function deleteDepartment(Department $department)
     {
         $name = $department->department_name;
@@ -132,19 +150,23 @@ class AdminController extends Controller
         return back()->with('success', "Department '{$name}' has been deleted.");
     }
 
+    // View all clearance requests system-wide
     public function clearanceRequests(Request $request)
     {
         $deptFilter   = $request->query('department');
         $statusFilter = $request->query('status');
+
         $requests = ClearanceRequest::with(['student', 'department'])
                         ->when($deptFilter,   fn($q) => $q->where('department_id', $deptFilter))
                         ->when($statusFilter, fn($q) => $q->where('status', $statusFilter))
                         ->latest()
                         ->paginate(25);
+
         $departments = Department::all();
         return view('admin.clearances', compact('requests', 'departments', 'deptFilter', 'statusFilter'));
     }
 
+    // Count students fully cleared by all departments
     private function countFullyClearedStudents(): int
     {
         $totalDepts = Department::count();
@@ -154,6 +176,7 @@ class AdminController extends Controller
         $clearedCount = 0;
 
         foreach ($studentIds as $studentId) {
+            // Uses user_id — matches actual DB column in clearance_requests table
             $approvedCount = ClearanceRequest::where('user_id', $studentId)
                                 ->where('status', 'approved')
                                 ->count();
@@ -161,6 +184,7 @@ class AdminController extends Controller
                 $clearedCount++;
             }
         }
+
         return $clearedCount;
     }
 }

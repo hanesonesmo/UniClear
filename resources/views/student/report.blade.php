@@ -49,8 +49,8 @@
     {{-- Header --}}
     <div class="text-center mb-4">
         <div class="seal">🎓</div>
-        <h1 class="h3 fw-bold" style="color: #1a3a6b;">CLEARANCE CERTIFICATE</h1>
-        <p class="text-muted mb-0">SmartClear – University Student Clearance Management System</p>
+        <h1 class="h3 fw-bold" style="color: #1a3a6b;">UNIVERSITY CLEARANCE CERTIFICATE</h1>
+        <p class="text-muted mb-0">UniClear – University Student Clearance Management System</p>
         <hr class="my-3">
     </div>
 

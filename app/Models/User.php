@@ -2,85 +2,71 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
-
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
-
-    /**
-     * Get the attributes that should be cast.
-     */
 
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role', // 'admin', 'staff', 'student'
-        'department_id', // nullable for admin and students
+        'role',
         'registration_number',
-     ];
+        'phone',
+        'department_id',
+    ];
 
-     //Automatic type casting for specific fields
-     protected $casts = [
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-     ];
+        'password'          => 'hashed',
+    ];
 
-//a user can have many clearance requests (for students)
-public function clearanceRequests()
-{
-   return $this->hasMany(ClearanceRequest::class, 'user_id');
-}
+    // -------------------------------------------------------
+    // RELATIONSHIPS
+    // -------------------------------------------------------
 
-//A staff member belongs to one department
-public function department()
-{
-    return $this->belongsTo(Department::class);
-}
+    // A student's clearance requests — foreign key is 'user_id'
+    public function clearanceRequests()
+    {
+        return $this->hasMany(ClearanceRequest::class, 'user_id');
+    }
 
-//Clearance requests where this user is the processor (staff)
-public function processedRequests()
-{
-    return $this->hasMany(ClearanceRequest::class, 'processed_by');
-}
+    // The department this user belongs to
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
 
-//Return true if the user is a student
-public function isStudent(): bool 
-{
-    return $this->role === 'student';
-}
+    // Requests processed by this staff member
+    public function processedRequests()
+    {
+        return $this->hasMany(ClearanceRequest::class, 'processed_by');
+    }
 
-//Returns true if the user is department staff
-public function isStaff(): bool 
-{
-    return $this->role === 'staff';
-}
+    // -------------------------------------------------------
+    // ROLE HELPERS
+    // -------------------------------------------------------
 
-//Return true if the user is an admin
-public function isAdmin(): bool {
-    return $this->role === 'admin';
-}
+    public function isStudent(): bool { return $this->role === 'student'; }
+    public function isStaff(): bool   { return $this->role === 'staff'; }
+    public function isAdmin(): bool   { return $this->role === 'admin'; }
 
-//Checks if the student is fully cleared
-public function isFullyCleared(): bool
-{
-$totalDepartments = Department::count();
-$approvedCount = $this->clearanceRequests()
-       ->where('status', 'approved')
-       ->count();
-       
-return $approvedCount === $totalDepartments;
+    // Returns true if all departments have approved this student
+    public function isFullyCleared(): bool
+    {
+        $totalDepartments = Department::count();
+        $approvedCount    = $this->clearanceRequests()
+                                  ->where('status', 'approved')
+                                  ->count();
+        return $approvedCount === $totalDepartments;
+    }
 }
-}
-

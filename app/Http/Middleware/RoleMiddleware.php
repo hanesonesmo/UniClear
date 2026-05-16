@@ -6,32 +6,31 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-
+/**
+ * RoleMiddleware
+ * Restricts routes by user role.
+ * Registered in bootstrap/app.php as 'role' alias.
+ * Usage: ->middleware('role:admin') or ->middleware('role:student,staff')
+ */
 class RoleMiddleware
 {
-
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (!$request->user()) {
+        if (!auth()->check()) {
             return redirect()->route('login');
-                }
+        }
 
-             $user = $request->user();
-             if (!$user || !in_array($user->role, $roles)) {
-                return match($user?->role) {
-                     'admin' => redirect()->route('admin.dashboard')
-                     ->with('error', 'Access denied.'),
+        $user = auth()->user();
 
-                     'staff' =>redirect()->route('department.dashboard')
-                     ->with('error', 'Access denied.'),
-
-                     'student' => redirect()->route('student.dashboard')
-                     ->with('error', 'Access denied.'),
-
-                     default => redirect()->route('login'),
-                };
-                }
-                
+        if (!in_array($user->role, $roles)) {
+            // Redirect to correct dashboard if wrong role
+            return match($user->role) {
+                'admin'   => redirect()->route('admin.dashboard')->with('error', 'Access denied.'),
+                'staff'   => redirect()->route('department.dashboard')->with('error', 'Access denied.'),
+                'student' => redirect()->route('student.dashboard')->with('error', 'Access denied.'),
+                default   => redirect()->route('login'),
+            };
+        }
 
         return $next($request);
     }
