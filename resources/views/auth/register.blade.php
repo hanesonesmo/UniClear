@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register – UniClear</title>
+    <title>Register – SmartClear</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -23,7 +23,7 @@
                     <div class="text-center mb-4">
                         <i class="bi bi-mortarboard-fill text-navy" style="font-size: 2.5rem;"></i>
                         <h1 class="h3 fw-bold text-navy mt-2 mb-1">Create Student Account</h1>
-                        <p class="text-muted small">UniClear – University Clearance System</p>
+                        <p class="text-muted small">SmartClear – University Clearance System</p>
                     </div>
 
                     {{-- Validation Errors --}}
