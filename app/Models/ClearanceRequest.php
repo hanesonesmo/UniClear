@@ -2,67 +2,79 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class ClearanceRequest extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'user_id',        // The actual DB column name (not student_id)
         'department_id',
-        'status', // pending, approved, rejected
-        'processed_by', 
-        'processed_at', 
-        'comment',// staff user id who processed the request
-     ];
+        'status',
+        'comment',
+        'processed_by',
+        'processed_at',
+    ];
 
-     protected $casts = [
+    protected $casts = [
         'processed_at' => 'datetime',
-     ];
+    ];
 
-     //RELATIONSHIPS
-//The student who submitted this clearance request
-public function students()
-{
-    return $this->belongsTo(User::class, 'user_id');
-}
+    // -------------------------------------------------------
+    // RELATIONSHIPS
+    // -------------------------------------------------------
 
-//The department responsible for approving/Rejecting this request
-public function department()
-{
-    return $this->belongsTo(Department::class);
-}
+    /**
+     * The student who submitted this request.
+     * Foreign key is 'user_id' (matches actual DB column).
+     */
+    public function student()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
-//The staff member who processed proved/rejected this request
-public function processedBy()
-{
-    return $this->belongsTo(User::class, 'processed_by');
-}
+    /**
+     * Same relationship aliased as 'user' for flexibility.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
-//HELPER METHODS
-public function isPending(): bool
-{
-    return $this->status === 'pending';
-}
+    /**
+     * The department handling this request.
+     */
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
 
-public function isApproved(): bool
-{
-    return $this->status === 'approved';  
-}
-public function isRejected(): bool
-{
-    return $this->status === 'rejected';  
-}
+    /**
+     * The staff member who processed this request.
+     */
+    public function processedBy()
+    {
+        return $this->belongsTo(User::class, 'processed_by');
+    }
 
-public function statusBadgeClass(): string
-{
-    return match ($this->status) {
-        'approved' => 'badge-success',
-        'rejected' => 'badge-danger',
-        default => 'badge-secondary',
-    };
-}
-}
+    // -------------------------------------------------------
+    // HELPER METHODS
+    // -------------------------------------------------------
 
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === 'approved';
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === 'rejected';
+    }
+}
