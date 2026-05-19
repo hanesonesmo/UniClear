@@ -1,19 +1,102 @@
-body { font-family: 'Inter', sans-serif; color: #1f2937; background-color: #f1f5f9; }
-:root { --navy: #1a3a6b; --navy-dark: #122a50; --navy-light: #e8edf5; }
-.bg-navy { background-color: var(--navy) !important; }
-.text-navy { color: var(--navy) !important; }
-.btn-navy { background-color: var(--navy); border-color: var(--navy); color: white; }
-.btn-navy:hover { background-color: var(--navy-dark); color: white; }
-.btn-outline-navy { border-color: var(--navy); color: var(--navy); }
-.btn-outline-navy:hover { background-color: var(--navy); color: white; }
-.card { border-radius: 12px; }
-.avatar-circle { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background-color: rgba(255,255,255,0.2); color: white; font-weight: 700; font-size: 0.85rem; }
-.badge.bg-gold { background-color: #c9991a !important; color: white; }
-.stat-icon { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.bg-navy-light { background-color: var(--navy-light); }
-.bg-success-light { background-color: #d1fae5; }
-.bg-warning-light { background-color: #fef9c3; }
-.bg-info-light { background-color: #dbeafe; }
-.form-control:focus, .form-select:focus { border-color: var(--navy); box-shadow: 0 0 0 0.2rem rgba(26,58,107,0.15); }
-.progress { border-radius: 99px; background-color: #e5e7eb; }
-.progress-bar { border-radius: 99px; }
+body {
+     font-family: 'Inter', sans-serif;
+     color: #1f2937;
+     background-color: #f1f5f9;
+    }
+
+:root {
+     --navy: #1a3a6b;
+      --navy-dark: #122a50;
+       --navy-light: #e8edf5;
+    }
+
+.bg-navy {
+    background-color: var(--navy) !important;
+ }
+
+.text-navy {
+    color: var(--navy) !important;
+ }
+
+.btn-navy {
+    background-color: var(--navy);
+    border-color: var(--navy);
+    color: white;
+}
+
+.btn-navy:hover {
+    background-color: var(--navy-dark);
+    color: white;
+}
+
+.btn-outline-navy {
+    border-color: var(--navy);
+    color: var(--navy);
+}
+
+.btn-outline-navy:hover {
+    background-color: var(--navy);
+    color: white;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.avatar-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.2);
+    color: white;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.badge.bg-gold {
+    background-color: #c9991a !important;
+     color: white;
+     }
+
+.stat-icon {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.bg-navy-light {
+    background-color: var(--navy-light);
+ }
+
+.bg-success-light {
+     background-color: #d1fae5;
+     }
+
+.bg-warning-light {
+    background-color: #fef9c3;
+}
+
+.bg-info-light {
+     background-color: #dbeafe;
+    }
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--navy);
+    box-shadow: 0 0 0 0.2rem rgba(26,58,107,0.15);
+}
+
+.progress {
+    border-radius: 99px;
+    background-color: #e5e7eb;
+}
+
+.progress-bar {
+    border-radius: 99px;
+}
+
